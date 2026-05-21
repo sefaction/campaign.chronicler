@@ -54,3 +54,20 @@ You can override with environment variables:
 - Campaign search endpoint and entity detail aggregation endpoint.
 - `/foundry` placeholder route group for future sync.
 - Alembic migration + seed data.
+
+
+## Unraid: fix for "Skipped No image to be pulled" + `lstat ... /backend` build errors
+Your error proves Unraid is still using an older compose stack definition that contains `build:` entries. If `build:` exists, Compose tries to build locally and will look for `/backend` and `/frontend` paths on Unraid.
+
+Use `docker-compose.unraid.yml` from this repo (image-only, no `build:` keys).
+
+### Exact recovery steps
+1. In Unraid Compose Manager, open the `campaign-chronicler` stack editor.
+2. Replace stack content with `docker-compose.unraid.yml` from this repo.
+3. Confirm there are **no** `build:` lines for backend/frontend.
+4. Set env vars (optional overrides):
+   - `BACKEND_IMAGE` (default `ghcr.io/sefaction/campaign-chronicler-backend:latest`)
+   - `FRONTEND_IMAGE` (default `ghcr.io/sefaction/campaign-chronicler-frontend:latest`)
+5. Redeploy using pull + up.
+
+If the registry is private, run `docker login ghcr.io` on the Unraid host first.
