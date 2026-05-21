@@ -22,8 +22,20 @@ Examples:
 - A tag: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#v1.0.0`
 - A commit SHA: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#<sha>`
 
-Backend API: http://localhost:8000/docs  
-Frontend: http://localhost:5173
+Backend API: http://localhost:18000/docs  
+Frontend: http://localhost:15173
+
+
+
+Default host ports were selected to avoid conflicts with your existing Unraid allocations:
+- PostgreSQL: `15432`
+- Backend API: `18000`
+- Frontend UI: `15173`
+
+You can override with environment variables:
+- `POSTGRES_HOST_PORT`
+- `BACKEND_HOST_PORT`
+- `FRONTEND_HOST_PORT`
 
 ## Unraid notes
 - Use Community Applications Docker Compose Manager.

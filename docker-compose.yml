@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports: ["5432:5432"]
+    ports: ["${POSTGRES_HOST_PORT:-15432}:5432"]
 
   backend:
     build:
@@ -17,16 +17,16 @@ services:
     volumes:
       - media_uploads:/app/uploads
     depends_on: [postgres]
-    ports: ["8000:8000"]
+    ports: ["${BACKEND_HOST_PORT:-18000}:8000"]
 
   frontend:
     build:
       context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler#main}
       dockerfile: frontend/Dockerfile
     environment:
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:${BACKEND_HOST_PORT:-18000}}
     depends_on: [backend]
-    ports: ["5173:5173"]
+    ports: ["${FRONTEND_HOST_PORT:-15173}:5173"]
 
 volumes:
   postgres_data:
