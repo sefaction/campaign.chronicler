@@ -1,0 +1,56 @@
+# Campaign Chronicler
+
+Dockerized tabletop RPG campaign lore tracking app.
+
+## Why backend/frontend pull was being skipped
+Your compose previously used `build:` for backend/frontend, not `image:`. `docker compose pull` only pulls services with `image`, so those services were shown as **Skipped No image to be pulled**.
+
+This project now uses pullable images for backend/frontend by default:
+- `ghcr.io/sefaction/campaign-chronicler-backend:latest`
+- `ghcr.io/sefaction/campaign-chronicler-frontend:latest`
+
+## Run (image-based, good for Unraid updates)
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Backend API: http://localhost:18000/docs  
+Frontend: http://localhost:15173
+
+## Required image publishing
+For pull/update to work, publish both images to GHCR (or change env vars to your registry):
+- `BACKEND_IMAGE`
+- `FRONTEND_IMAGE`
+
+If your registry is private, authenticate on Unraid host first:
+```bash
+docker login ghcr.io
+```
+
+## Unraid-safe default host ports
+Defaults were selected to avoid conflicts with your provided port list:
+- PostgreSQL: `15432`
+- Backend API: `18000`
+- Frontend UI: `15173`
+
+You can override with environment variables:
+- `POSTGRES_HOST_PORT`
+- `BACKEND_HOST_PORT`
+- `FRONTEND_HOST_PORT`
+
+## Environment variables
+- `DATABASE_URL`
+- `SECRET_KEY`
+- `BACKEND_IMAGE`
+- `FRONTEND_IMAGE`
+- `VITE_API_BASE_URL`
+
+## Features implemented
+- Multi-campaign schema with structured entities, relationships, timelines, events, sessions, tags, and calendars.
+- Golarion date fields (`year_ar`, `month_number`, `day`, `display_date`, `sort_key`).
+- Visibility layers and Foundry prep fields (`foundry_*`, `sync_status`, `last_synced_at`).
+- REST CRUD endpoints for required major models.
+- Campaign search endpoint and entity detail aggregation endpoint.
+- `/foundry` placeholder route group for future sync.
+- Alembic migration + seed data.
