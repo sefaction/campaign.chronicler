@@ -11,7 +11,7 @@ services:
 
   backend:
     build:
-      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler#main}
+      context: ${GIT_CONTEXT:-.}
       dockerfile: backend/Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://postgres:postgres@postgres:5432/campaign_chronicler}
@@ -23,7 +23,7 @@ services:
 
   frontend:
     build:
-      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler#main}
+      context: ${GIT_CONTEXT:-.}
       dockerfile: frontend/Dockerfile
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:${BACKEND_HOST_PORT:-18000}}

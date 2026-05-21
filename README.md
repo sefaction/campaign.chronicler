@@ -14,8 +14,8 @@ This lets you deploy/update by changing branch/tag/commit in `GIT_CONTEXT`.
 docker compose up --build
 ```
 
-By default compose uses:
-- `context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler#main}`
+By default compose uses local context:
+- `context: ${GIT_CONTEXT:-.}`
 
 Examples:
 - Latest `main`: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#main`
@@ -69,3 +69,13 @@ Optional: if you want to override defaults, define these variables in Unraid Com
 - `BACKEND_HOST_PORT`
 - `FRONTEND_HOST_PORT`
 - `VITE_API_BASE_URL`
+
+
+## Troubleshooting: remote build context 404
+If you see `failed to read downloaded context ... invalid response status 404`, the Git URL in `GIT_CONTEXT` is not valid or not accessible from Unraid.
+
+Use a valid public repo URL (or one your Unraid host can access), for example:
+`GIT_CONTEXT=https://github.com/<your-org>/<your-repo>#main`
+
+If needed, temporarily force local build context:
+`GIT_CONTEXT=. docker compose up --build`
