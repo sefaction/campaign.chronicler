@@ -2,32 +2,34 @@
 
 Dockerized tabletop RPG campaign lore tracking app.
 
-## Run with local source
+## Why backend/frontend pull was being skipped
+Your compose previously used `build:` for backend/frontend, not `image:`. `docker compose pull` only pulls services with `image`, so those services were shown as **Skipped No image to be pulled**.
+
+This project now uses pullable images for backend/frontend by default:
+- `ghcr.io/sefaction/campaign-chronicler-backend:latest`
+- `ghcr.io/sefaction/campaign-chronicler-frontend:latest`
+
+## Run (image-based, good for Unraid updates)
 ```bash
-GIT_CONTEXT=. docker compose up --build
+docker compose pull
+docker compose up -d
 ```
-
-## Run directly from GitHub source context
-This lets you deploy/update by changing branch/tag/commit in `GIT_CONTEXT`.
-
-```bash
-docker compose up --build
-```
-
-By default compose uses local context:
-- `context: ${GIT_CONTEXT:-.}`
-
-Examples:
-- Latest `main`: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#main`
-- A tag: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#v1.0.0`
-- A commit SHA: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#<sha>`
 
 Backend API: http://localhost:18000/docs  
 Frontend: http://localhost:15173
 
+## Required image publishing
+For pull/update to work, publish both images to GHCR (or change env vars to your registry):
+- `BACKEND_IMAGE`
+- `FRONTEND_IMAGE`
 
+If your registry is private, authenticate on Unraid host first:
+```bash
+docker login ghcr.io
+```
 
-Default host ports were selected to avoid conflicts with your existing Unraid allocations:
+## Unraid-safe default host ports
+Defaults were selected to avoid conflicts with your provided port list:
 - PostgreSQL: `15432`
 - Backend API: `18000`
 - Frontend UI: `15173`
@@ -37,12 +39,12 @@ You can override with environment variables:
 - `BACKEND_HOST_PORT`
 - `FRONTEND_HOST_PORT`
 
-## Unraid notes
-- Use Community Applications Docker Compose Manager.
-- Place project on cache/appdata share.
-- Keep named volumes `postgres_data` and `media_uploads` for persistent DB and media.
-- For auto-updates from GitHub, set `GIT_CONTEXT` in your Unraid compose env and redeploy.
-- Map ports as needed if conflicts exist.
+## Environment variables
+- `DATABASE_URL`
+- `SECRET_KEY`
+- `BACKEND_IMAGE`
+- `FRONTEND_IMAGE`
+- `VITE_API_BASE_URL`
 
 ## Features implemented
 - Multi-campaign schema with structured entities, relationships, timelines, events, sessions, tags, and calendars.
@@ -52,30 +54,3 @@ You can override with environment variables:
 - Campaign search endpoint and entity detail aggregation endpoint.
 - `/foundry` placeholder route group for future sync.
 - Alembic migration + seed data.
-
-
-## Unraid compose-manager fix for missing `.env.example`
-If your stack fails with:
-`env file .../.env.example not found`
-that came from older compose config using `env_file: .env.example`.
-
-This project now sets backend env vars directly in `docker-compose.yml`, so no `env_file` is required.
-
-Optional: if you want to override defaults, define these variables in Unraid Compose Manager:
-- `DATABASE_URL`
-- `SECRET_KEY`
-- `GIT_CONTEXT`
-- `POSTGRES_HOST_PORT`
-- `BACKEND_HOST_PORT`
-- `FRONTEND_HOST_PORT`
-- `VITE_API_BASE_URL`
-
-
-## Troubleshooting: remote build context 404
-If you see `failed to read downloaded context ... invalid response status 404`, the Git URL in `GIT_CONTEXT` is not valid or not accessible from Unraid.
-
-Use a valid public repo URL (or one your Unraid host can access), for example:
-`GIT_CONTEXT=https://github.com/<your-org>/<your-repo>#main`
-
-If needed, temporarily force local build context:
-`GIT_CONTEXT=. docker compose up --build`
