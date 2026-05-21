@@ -52,3 +52,20 @@ You can override with environment variables:
 - Campaign search endpoint and entity detail aggregation endpoint.
 - `/foundry` placeholder route group for future sync.
 - Alembic migration + seed data.
+
+
+## Unraid compose-manager fix for missing `.env.example`
+If your stack fails with:
+`env file .../.env.example not found`
+that came from older compose config using `env_file: .env.example`.
+
+This project now sets backend env vars directly in `docker-compose.yml`, so no `env_file` is required.
+
+Optional: if you want to override defaults, define these variables in Unraid Compose Manager:
+- `DATABASE_URL`
+- `SECRET_KEY`
+- `GIT_CONTEXT`
+- `POSTGRES_HOST_PORT`
+- `BACKEND_HOST_PORT`
+- `FRONTEND_HOST_PORT`
+- `VITE_API_BASE_URL`
