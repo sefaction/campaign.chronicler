@@ -2,17 +2,34 @@
 
 Dockerized tabletop RPG campaign lore tracking app.
 
-## Run
+## Run with local source
+```bash
+GIT_CONTEXT=. docker compose up --build
+```
+
+## Run directly from GitHub source context
+This lets you deploy/update by changing branch/tag/commit in `GIT_CONTEXT`.
+
 ```bash
 docker compose up --build
 ```
-Backend API: http://localhost:8000/docs
+
+By default compose uses:
+- `context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler#main}`
+
+Examples:
+- Latest `main`: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#main`
+- A tag: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#v1.0.0`
+- A commit SHA: `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler#<sha>`
+
+Backend API: http://localhost:8000/docs  
 Frontend: http://localhost:5173
 
 ## Unraid notes
 - Use Community Applications Docker Compose Manager.
 - Place project on cache/appdata share.
 - Keep named volumes `postgres_data` and `media_uploads` for persistent DB and media.
+- For auto-updates from GitHub, set `GIT_CONTEXT` in your Unraid compose env and redeploy.
 - Map ports as needed if conflicts exist.
 
 ## Features implemented
