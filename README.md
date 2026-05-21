@@ -71,3 +71,20 @@ Use `docker-compose.unraid.yml` from this repo (image-only, no `build:` keys).
 5. Redeploy using pull + up.
 
 If the registry is private, run `docker login ghcr.io` on the Unraid host first.
+
+
+## Unraid mode without GHCR (build directly from GitHub)
+If GHCR returns `denied`, use `docker-compose.unraid.yml`. It builds backend/frontend directly from GitHub context instead of pulling GHCR app images.
+
+Key behavior:
+- `postgres` is still pulled as an image (`postgres:16`).
+- `backend` and `frontend` are built from:
+  - `context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}`
+
+Recommended stack file in Unraid Compose Manager:
+- `docker-compose.unraid.yml`
+
+Then deploy with rebuild/update so Unraid fetches latest GitHub source for the branch/tag/SHA in `GIT_CONTEXT`.
+
+If you want a pinned release, set for example:
+- `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler.git#v1.0.0`
