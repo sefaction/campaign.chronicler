@@ -61,3 +61,9 @@ Use the seeded credentials to sign in from the frontend login page:
 - Password: `gm`
 
 Then navigate to `/campaigns`, `/entities`, `/events`, `/sessions`, and related create pages to begin entering data.
+
+
+### If frontend says "Cannot reach backend" but backend is up
+This can be a browser CORS block (shows as fetch failure).
+Set `CORS_ORIGINS` to include your frontend URL, e.g.
+`http://192.168.1.2:15173`.

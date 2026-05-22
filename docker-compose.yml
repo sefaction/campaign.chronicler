@@ -21,6 +21,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://postgres:postgres@postgres:5432/campaign_chronicler}
       SECRET_KEY: ${SECRET_KEY:-change-me}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://192.168.1.2:15173,http://localhost:15173}
     depends_on:
       - postgres
     volumes:
