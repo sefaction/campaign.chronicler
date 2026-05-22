@@ -72,3 +72,15 @@ Steps in Portainer:
 2. Repository method: point to this repo.
 3. Compose path: `docker-compose.portainer.yml`.
 4. Deploy the stack.
+
+
+## Portainer fix for `path "/data/compose/.../backend" not found`
+That error means Portainer is trying to build from a local relative path (`./backend`) in a stack folder that does not contain this repo tree.
+
+`docker-compose.portainer.yml` now uses GitHub build context per service:
+- `context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}`
+- `dockerfile: backend/Dockerfile` and `frontend/Dockerfile`
+
+So Portainer no longer requires `/data/compose/<id>/backend` to exist.
+
+If you still get a fetch error, set `GIT_CONTEXT` explicitly in the stack env to your exact repo URL/branch.

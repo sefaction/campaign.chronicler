@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:16
     restart: unless-stopped
+    pull_policy: always
     environment:
       POSTGRES_DB: campaign_chronicler
       POSTGRES_USER: postgres
@@ -13,8 +14,9 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}
+      dockerfile: backend/Dockerfile
+    pull_policy: build
     restart: unless-stopped
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://postgres:postgres@postgres:5432/campaign_chronicler}
@@ -28,8 +30,9 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}
+      dockerfile: frontend/Dockerfile
+    pull_policy: build
     restart: unless-stopped
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:${BACKEND_HOST_PORT:-18000}}
