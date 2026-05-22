@@ -14,7 +14,7 @@ services:
 
   backend:
     build:
-      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}
+      context: ${GIT_CONTEXT}
       dockerfile: backend/Dockerfile
     pull_policy: build
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
 
   frontend:
     build:
-      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}
+      context: ${GIT_CONTEXT}
       dockerfile: frontend/Dockerfile
     pull_policy: build
     restart: unless-stopped

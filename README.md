@@ -84,3 +84,17 @@ That error means Portainer is trying to build from a local relative path (`./bac
 So Portainer no longer requires `/data/compose/<id>/backend` to exist.
 
 If you still get a fetch error, set `GIT_CONTEXT` explicitly in the stack env to your exact repo URL/branch.
+
+
+## Portainer fix for `could not read Username for 'https://github.com'`
+This specific error usually means the `GIT_CONTEXT` repo URL is not the exact repo slug, so GitHub prompts for credentials and BuildKit cannot answer prompts.
+
+For this project, set `GIT_CONTEXT` explicitly in Portainer stack env to:
+- `https://github.com/sefaction/campaign.chronicler.git#main`
+
+Do **not** rely on guessed defaults across different compose files.
+
+Quick verification from your Portainer host shell:
+- `git ls-remote https://github.com/sefaction/campaign.chronicler.git`
+
+If that command fails, the URL is wrong for your actual repo slug.
