@@ -88,3 +88,22 @@ Then deploy with rebuild/update so Unraid fetches latest GitHub source for the b
 
 If you want a pinned release, set for example:
 - `GIT_CONTEXT=https://github.com/sefaction/campaign-chronicler.git#v1.0.0`
+
+
+## Critical fix for `pull access denied for campaign-chronicler-backend:git`
+That error happened because Unraid tried to **pull** a local-only tag name (`campaign-chronicler-backend:git`) before build.
+
+`docker-compose.unraid.yml` now avoids custom `image:` tags for build services and sets:
+- `pull_policy: never` on `backend` and `frontend`
+
+This forces Unraid to build these services from GitHub context instead of trying to pull nonexistent registries.
+
+### Use this exact stack behavior on Unraid
+- Stack file: `docker-compose.unraid.yml`
+- `GIT_CONTEXT` should be a valid repo URL, e.g.:
+  - `https://github.com/sefaction/campaign-chronicler.git#main`
+- Update/rebuild stack (not pull-only) so backend/frontend are built.
+
+Expected pull phase behavior:
+- `postgres` pulls normally.
+- `backend` and `frontend` are not pulled; they are built from Git context.

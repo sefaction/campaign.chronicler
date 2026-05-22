@@ -15,8 +15,7 @@ services:
     build:
       context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}
       dockerfile: backend/Dockerfile
-    image: ${BACKEND_IMAGE:-campaign-chronicler-backend:git}
-    pull_policy: build
+    pull_policy: never
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://postgres:postgres@postgres:5432/campaign_chronicler}
       SECRET_KEY: ${SECRET_KEY:-change-me}
@@ -31,8 +30,7 @@ services:
     build:
       context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}
       dockerfile: frontend/Dockerfile
-    image: ${FRONTEND_IMAGE:-campaign-chronicler-frontend:git}
-    pull_policy: build
+    pull_policy: never
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:${BACKEND_HOST_PORT:-18000}}
     depends_on:
