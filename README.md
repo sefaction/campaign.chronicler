@@ -52,3 +52,23 @@ Use:
 
 Not:
 - `https://github.com/sefaction/campaign.chronicler.git#main`
+
+
+## Portainer default compose (recommended first launch sanity check)
+Yes — this is the simplest path to get a first successful launch.
+
+Use `docker-compose.portainer.yml` in Portainer with repository checkout enabled (or a local bind that includes this repo).
+
+Why this helps:
+- It builds from local repo folders (`./backend`, `./frontend`) instead of remote Git context.
+- It avoids GHCR auth and remote BuildKit Git cloning variables.
+- It keeps the same non-conflicting host ports:
+  - Postgres `15432`
+  - Backend `18000`
+  - Frontend `15173`
+
+Steps in Portainer:
+1. Stacks -> Add stack.
+2. Repository method: point to this repo.
+3. Compose path: `docker-compose.portainer.yml`.
+4. Deploy the stack.
