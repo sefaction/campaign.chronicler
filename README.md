@@ -2,41 +2,31 @@
 
 Dockerized tabletop RPG campaign lore tracking app.
 
-## What was failing and why
-Your latest error shows Docker BuildKit tried to clone GitHub and failed with:
-`fatal: could not read Username for 'https://github.com': terminal prompts disabled`
+## Fix for the GHCR `denied` error
+Your latest failure is specifically GHCR auth/visibility:
+- `ghcr.io/sefaction/campaign-chronicler/frontend:main ... denied`
 
-That means the repo URL used for `build.context` requires authentication (private repo or restricted access), but no non-interactive credentials were provided.
+To eliminate GHCR entirely, `docker-compose.unraid.yml` now builds backend/frontend directly from your public GitHub repo:
+- `https://github.com/sefaction/campaign.chronicler.git#main`
 
-## Correct Unraid deployment options
+So:
+- `postgres` is pulled (`postgres:16`)
+- `backend` is built from GitHub context
+- `frontend` is built from GitHub context
 
-### Option A (recommended): pull prebuilt images
-Use `docker-compose.unraid.yml` in Unraid Compose Manager.
+## Unraid deployment (recommended)
+1. In Unraid Compose Manager, use `docker-compose.unraid.yml` as the stack file.
+2. Set (or keep default) environment variables from `.env.example`.
+3. Redeploy with rebuild.
 
-This file is image-only for app services:
-- Backend image: `ghcr.io/sefaction/campaign-chronicler/backend:main`
-- Frontend image: `ghcr.io/sefaction/campaign-chronicler/frontend:main`
+Expected logs:
+- Pull step: postgres pulled; backend/frontend skipped (they are build services).
+- Build step: backend/frontend build from GitHub context.
 
-Expected pull behavior:
-- `postgres` pulled
-- `backend` pulled
-- `frontend` pulled
-- **No build step** for backend/frontend
-
-If images are private, run on Unraid host first:
-```bash
-docker login ghcr.io
-```
-
-### Option B: build from GitHub source
-Use `docker-compose.unraid.build.yml` only when you intentionally want remote source builds.
-
-For private repos, you must set `GIT_CONTEXT` with embedded non-interactive credentials, e.g.:
-```bash
-GIT_CONTEXT=https://<github-username>:<github-token>@github.com/sefaction/campaign-chronicler.git#main
-```
-
-Without that, BuildKit cannot prompt for credentials and will fail exactly like your error.
+## If build fails on wrong repo path
+If your actual repo slug is different, set `GIT_CONTEXT` explicitly, for example:
+- `https://github.com/sefaction/campaign-chronicler.git#main`
+- `https://github.com/sefaction/campaign.chronicler.git#main`
 
 ## Ports (non-conflicting defaults)
 - PostgreSQL: `15432 -> 5432`
@@ -44,13 +34,11 @@ Without that, BuildKit cannot prompt for credentials and will fail exactly like 
 - Frontend UI: `15173 -> 5173`
 
 ## Environment variables
-See `.env.example` for defaults:
+See `.env.example`:
 - `DATABASE_URL`
 - `SECRET_KEY`
 - `POSTGRES_HOST_PORT`
 - `BACKEND_HOST_PORT`
 - `FRONTEND_HOST_PORT`
 - `VITE_API_BASE_URL`
-- `BACKEND_IMAGE`
-- `FRONTEND_IMAGE`
-- `GIT_CONTEXT` (build-mode only)
+- `GIT_CONTEXT`
