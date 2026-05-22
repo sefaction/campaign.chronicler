@@ -53,3 +53,11 @@ Use:
 - API root: `http://<server-ip>:18000/`
 - Health: `http://<server-ip>:18000/health`
 - Swagger docs: `http://<server-ip>:18000/docs`
+
+
+### Seed login
+Use the seeded credentials to sign in from the frontend login page:
+- Username: `gm`
+- Password: `gm`
+
+Then navigate to `/campaigns`, `/entities`, `/events`, `/sessions`, and related create pages to begin entering data.
