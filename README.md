@@ -37,3 +37,13 @@ These are controlled by:
 - `BACKEND_DATA_PATH`
 - `BACKEND_UPLOADS_PATH`
 - `POSTGRES_DATA_PATH`
+
+
+## Backend URL requires port
+The backend is published on host port `18000` by default.
+
+Use:
+- `http://192.168.1.2:18000/health`
+- `http://192.168.1.2:18000/docs`
+
+`http://192.168.1.2` (without `:18000`) will fail unless another service is bound to port 80.
