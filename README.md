@@ -47,3 +47,9 @@ Use:
 - `http://192.168.1.2:18000/docs`
 
 `http://192.168.1.2` (without `:18000`) will fail unless another service is bound to port 80.
+
+
+### API endpoints
+- API root: `http://<server-ip>:18000/`
+- Health: `http://<server-ip>:18000/health`
+- Swagger docs: `http://<server-ip>:18000/docs`
