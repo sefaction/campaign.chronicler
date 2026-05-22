@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ${POSTGRES_DATA_PATH:-/mnt/user/appdata/campaign-chronicler/postgres}:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_HOST_PORT:-15432}:5432"
 
@@ -24,7 +24,8 @@ services:
     depends_on:
       - postgres
     volumes:
-      - media_uploads:/app/uploads
+      - ${BACKEND_DATA_PATH:-/mnt/user/appdata/campaign-chronicler/backend}:/app/backend/data
+      - ${BACKEND_UPLOADS_PATH:-/mnt/user/appdata/campaign-chronicler/backend/uploads}:/app/uploads
     ports:
       - "${BACKEND_HOST_PORT:-18000}:8000"
 
@@ -40,7 +41,3 @@ services:
       - backend
     ports:
       - "${FRONTEND_HOST_PORT:-15173}:5173"
-
-volumes:
-  postgres_data:
-  media_uploads:
