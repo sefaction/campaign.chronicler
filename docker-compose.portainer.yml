@@ -36,7 +36,7 @@ services:
     pull_policy: build
     restart: unless-stopped
     environment:
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:${BACKEND_HOST_PORT:-18000}}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://192.168.1.2:${BACKEND_HOST_PORT:-18000}}
     depends_on:
       - backend
     ports:
