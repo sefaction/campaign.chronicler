@@ -13,7 +13,7 @@ services:
 
   backend:
     build:
-      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign.chronicler.git#main}
+      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}
       dockerfile: backend/Dockerfile
     pull_policy: never
     environment:
@@ -28,7 +28,7 @@ services:
 
   frontend:
     build:
-      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign.chronicler.git#main}
+      context: ${GIT_CONTEXT:-https://github.com/sefaction/campaign-chronicler.git#main}
       dockerfile: frontend/Dockerfile
     pull_policy: never
     environment:

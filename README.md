@@ -42,3 +42,13 @@ See `.env.example`:
 - `FRONTEND_HOST_PORT`
 - `VITE_API_BASE_URL`
 - `GIT_CONTEXT`
+
+
+## Important: correct GitHub repo slug
+If Unraid build fails while fetching Git context, verify your slug uses a hyphen, not a dot.
+
+Use:
+- `https://github.com/sefaction/campaign-chronicler.git#main`
+
+Not:
+- `https://github.com/sefaction/campaign.chronicler.git#main`
