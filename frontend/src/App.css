@@ -1,0 +1,7 @@
+.shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.sidebar { background: #111827; color: #f9fafb; padding: 16px; }
+.sidebar a { color: #93c5fd; text-decoration: none; }
+.sidebar a:hover { text-decoration: underline; }
+.content { padding: 24px; }
+.card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
