@@ -67,3 +67,8 @@ Then navigate to `/campaigns`, `/entities`, `/events`, `/sessions`, and related 
 This can be a browser CORS block (shows as fetch failure).
 Set `CORS_ORIGINS` to include your frontend URL, e.g.
 `http://192.168.1.2:15173`.
+
+
+### Migration/bootstrap behavior
+Backend startup now fails fast if DB is unreachable, runs Alembic migrations, then runs a table-ensure fallback (`init_db.py`) before seeding.
+This prevents `relation "users" does not exist` during first login.
