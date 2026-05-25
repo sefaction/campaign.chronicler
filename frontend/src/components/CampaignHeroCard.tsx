@@ -1,0 +1,2 @@
+import React from 'react';
+export default function CampaignHeroCard(){return <section className='hero card'><div className='hero-img'>Cover Art</div><div><h1>Shadows of Absalom</h1><p>A web of noble intrigue, hidden factions, and forbidden oaths in the City at the Center of the World.</p><p><strong>System:</strong> Pathfinder 2e · <strong>Status:</strong> Active</p><p><strong>Foundry:</strong> Not synced (placeholder)</p></div></section>}
