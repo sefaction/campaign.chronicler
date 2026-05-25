@@ -1,6 +1,6 @@
 from datetime import datetime, date
-from sqlalchemy import String, Text, Integer, DateTime, ForeignKey, Date, Enum, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, Text, Integer, DateTime, ForeignKey, Date, Enum
+from sqlalchemy.orm import Mapped, mapped_column
 from app.db.session import Base
 import enum
 
@@ -9,8 +9,10 @@ class CampaignMemberRole(str, enum.Enum): owner="owner"; gm="gm"; player="player
 class Visibility(str, enum.Enum): gm_only="gm_only"; party="party"; specific_players="specific_players"; public="public"; rumor="rumor"
 class CalendarType(str, enum.Enum): golarion="golarion"; custom="custom"
 class DatePrecision(str, enum.Enum): exact="exact"; month="month"; year="year"; approximate="approximate"; unknown="unknown"
-class EntityType(str, enum.Enum): character="character"; organization="organization"; place="place"; item="item"; ship="ship"; family="family"; deity="deity"; concept="concept"
+class EntityType(str, enum.Enum):
+    character="character"; organization="organization"; faction="faction"; place="place"; settlement="settlement"; region="region"; item="item"; artifact="artifact"; ship="ship"; family="family"; deity="deity"; concept="concept"; historical_period="historical_period"
 class SyncStatus(str, enum.Enum): not_synced="not_synced"; synced="synced"; changed_local="changed_local"; changed_foundry="changed_foundry"; conflict="conflict"
+class Confidence(str, enum.Enum): confirmed="confirmed"; suspected="suspected"; rumor="rumor"; false="false"; unknown="unknown"
 
 class User(Base):
     __tablename__="users"
@@ -62,8 +64,11 @@ class Entity(Base):
     aliases: Mapped[str|None]=mapped_column(Text)
     summary: Mapped[str|None]=mapped_column(Text)
     description_markdown: Mapped[str|None]=mapped_column(Text)
+    public_notes_markdown: Mapped[str|None]=mapped_column(Text)
     gm_notes_markdown: Mapped[str|None]=mapped_column(Text)
+    rumor_notes_markdown: Mapped[str|None]=mapped_column(Text)
     visibility: Mapped[Visibility]=mapped_column(Enum(Visibility), default=Visibility.party)
+    confidence: Mapped[Confidence]=mapped_column(Enum(Confidence), default=Confidence.unknown)
     status: Mapped[str|None]=mapped_column(String(60))
     image_url: Mapped[str|None]=mapped_column(String(255))
     foundry_journal_uuid: Mapped[str|None]=mapped_column(String(200))
@@ -85,6 +90,11 @@ class Tag(Base):
 class EntityTag(Base):
     __tablename__="entity_tags"
     entity_id: Mapped[int]=mapped_column(ForeignKey("entities.id"), primary_key=True)
+    tag_id: Mapped[int]=mapped_column(ForeignKey("tags.id"), primary_key=True)
+
+class RelationshipTag(Base):
+    __tablename__="relationship_tags"
+    relationship_id: Mapped[int]=mapped_column(ForeignKey("relationships.id"), primary_key=True)
     tag_id: Mapped[int]=mapped_column(ForeignKey("tags.id"), primary_key=True)
 
 class Timeline(Base):
@@ -115,6 +125,7 @@ class Event(Base):
     display_date: Mapped[str|None]=mapped_column(String(80))
     sort_key: Mapped[int|None]=mapped_column(Integer)
     visibility: Mapped[Visibility]=mapped_column(Enum(Visibility), default=Visibility.party)
+    confidence: Mapped[Confidence]=mapped_column(Enum(Confidence), default=Confidence.unknown)
     location_entity_id: Mapped[int|None]=mapped_column(ForeignKey("entities.id"))
     foundry_journal_uuid: Mapped[str|None]=mapped_column(String(200))
     sync_status: Mapped[SyncStatus]=mapped_column(Enum(SyncStatus), default=SyncStatus.not_synced)
@@ -129,12 +140,14 @@ class Relationship(Base):
     source_entity_id: Mapped[int]=mapped_column(ForeignKey("entities.id"))
     target_entity_id: Mapped[int]=mapped_column(ForeignKey("entities.id"))
     relationship_type: Mapped[str]=mapped_column(String(80))
-    relationship_label: Mapped[str|None]=mapped_column(String(120))
+    source_label: Mapped[str|None]=mapped_column(String(120))
+    target_label: Mapped[str|None]=mapped_column(String(120))
+    custom_label: Mapped[str|None]=mapped_column(String(120))
     description_markdown: Mapped[str|None]=mapped_column(Text)
     gm_notes_markdown: Mapped[str|None]=mapped_column(Text)
     directionality: Mapped[str]=mapped_column(String(20), default="directed")
     status: Mapped[str]=mapped_column(String(20), default="active")
-    confidence: Mapped[str]=mapped_column(String(20), default="confirmed")
+    confidence: Mapped[Confidence]=mapped_column(Enum(Confidence), default=Confidence.confirmed)
     visibility: Mapped[Visibility]=mapped_column(Enum(Visibility), default=Visibility.party)
     start_year_ar: Mapped[int|None]=mapped_column(Integer)
     start_month_number: Mapped[int|None]=mapped_column(Integer)

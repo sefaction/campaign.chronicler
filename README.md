@@ -72,3 +72,12 @@ Set `CORS_ORIGINS` to include your frontend URL, e.g.
 ### Migration/bootstrap behavior
 Backend startup now fails fast if DB is unreachable, runs Alembic migrations, then runs a table-ensure fallback (`init_db.py`) before seeding.
 This prevents `relation "users" does not exist` during first login.
+
+## Phase 2 delivered
+- Entity CRUD with filters and detail relation sections.
+- Tag CRUD and campaign tag listing.
+- Relationship CRUD with first-class records and type label seed endpoint.
+- Event CRUD with exact-date display/sort_key generation and event participants API.
+- Timeline CRUD + timeline events sorted by sort_key.
+- Seed data now includes multiple entities, tags, 5 relationships, 3 events, timeline, and participants.
+

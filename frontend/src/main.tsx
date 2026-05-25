@@ -1,113 +1,23 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Link, Route, Routes, useNavigate } from 'react-router-dom';
-
+import { BrowserRouter, Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? `${window.location.protocol}//${window.location.hostname}:18000`;
+const campaignId = 1;
 
+function LoginPage(){const [username,setU]=useState('gm');const [password,setP]=useState('gm');const [s,setS]=useState('');const nav=useNavigate();return <div><h2>Login</h2><form onSubmit={async e=>{e.preventDefault();const r=await fetch(`${API_BASE}/auth/login`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({username,password})});if(!r.ok){setS('failed');return;}setS('ok');nav('/entities')}}><input value={username} onChange={e=>setU(e.target.value)}/><input type='password' value={password} onChange={e=>setP(e.target.value)}/><button>Sign in</button></form><p>{s}</p></div>}
 
-const shellStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: '240px 1fr',
-  minHeight: '100vh',
-  fontFamily: 'Inter, system-ui, sans-serif',
-  background: '#f3f4f6',
-  color: '#111827'
-};
+function Entities(){const [items,setItems]=useState<any[]>([]);const [q,setQ]=useState('');const [entityType,setType]=useState('');const [visibility,setVis]=useState('');const [confidence,setConf]=useState('');
+const load=()=>fetch(`${API_BASE}/campaigns/${campaignId}/entities?q=${encodeURIComponent(q)}&entity_type=${entityType}&visibility=${visibility}&confidence=${confidence}&sort=name`).then(r=>r.json()).then(setItems);
+useEffect(()=>{load();},[]);
+return <div><h2>Entities</h2><div><input placeholder='search' value={q} onChange={e=>setQ(e.target.value)}/><input placeholder='type' value={entityType} onChange={e=>setType(e.target.value)}/><input placeholder='visibility' value={visibility} onChange={e=>setVis(e.target.value)}/><input placeholder='confidence' value={confidence} onChange={e=>setConf(e.target.value)}/><button onClick={load}>Apply</button><Link to='/entity/new'>New Entity</Link></div><ul>{items.map(i=><li key={i.id}><Link to={`/entity/${i.id}`}>{i.name}</Link> ({i.entity_type})</li>)}</ul></div>}
 
-const navStyle: React.CSSProperties = {
-  background: '#111827',
-  color: '#f9fafb',
-  padding: '16px',
-  borderRight: '1px solid #1f2937'
-};
+function EntityForm(){const {id}=useParams();const edit=!!id&&id!=='new';const [data,setData]=useState<any>({campaign_id:1,entity_type:'character',name:'',summary:'',description_markdown:'',public_notes_markdown:'',rumor_notes_markdown:'',gm_notes_markdown:'',visibility:'party',confidence:'unknown',status:''}); const nav=useNavigate();
+useEffect(()=>{if(edit) fetch(`${API_BASE}/entities/${id}`).then(r=>r.json()).then(setData)},[id]);
+const save=async()=>{const method=edit?'PUT':'POST';const url=edit?`${API_BASE}/entities/${id}`:`${API_BASE}/entities`;await fetch(url,{method,headers:{'content-type':'application/json'},body:JSON.stringify(data)});nav('/entities')};
+return <div><h2>{edit?'Edit':'New'} Entity</h2>{['name','aliases','summary','status','entity_type','visibility','confidence','foundry_journal_uuid','foundry_actor_uuid','foundry_compendium_uuid'].map(k=><div key={k}><label>{k}<input value={data[k]||''} onChange={e=>setData({...data,[k]:e.target.value})}/></label></div>)}{['description_markdown','public_notes_markdown','rumor_notes_markdown','gm_notes_markdown'].map(k=><div key={k}><label>{k}<textarea value={data[k]||''} onChange={e=>setData({...data,[k]:e.target.value})}/></label></div>)}<button onClick={save}>Save</button></div>}
 
-const cardStyle: React.CSSProperties = {
-  background: '#ffffff',
-  borderRadius: 12,
-  padding: 20,
-  boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-};
+function EntityDetail(){const {id}=useParams();const [d,setD]=useState<any>();useEffect(()=>{fetch(`${API_BASE}/entities/${id}/detail`).then(r=>r.json()).then(setD)},[id]); if(!d) return <div>Loading...</div>; return <div><h2>{d.entity.name}</h2><p>{d.entity.summary}</p><p>{d.entity.description_markdown}</p><p>Visibility: {d.entity.visibility} | Confidence: {d.entity.confidence}</p><h3>Tags</h3><ul>{d.tags.length?d.tags.map((t:any)=><li key={t.id}>{t.name}</li>):<li>No tags</li>}</ul><h3>Outgoing Relationships</h3><ul>{d.outgoing_relationships.length?d.outgoing_relationships.map((r:any)=><li key={r.id}>{r.source_label||r.relationship_type} -> #{r.target_entity_id} ({r.status}/{r.confidence})</li>):<li>No outgoing relationships</li>}</ul><h3>Incoming Relationships</h3><ul>{d.incoming_relationships.length?d.incoming_relationships.map((r:any)=><li key={r.id}>#{r.source_entity_id} {r.target_label||r.relationship_type} ({r.status}/{r.confidence})</li>):<li>No incoming relationships</li>}</ul><h3>Related Events</h3><ul>{d.related_events.length?d.related_events.map((e:any)=><li key={e.id}>{e.title}</li>):<li>No events</li>}</ul></div>}
 
-function Placeholder({ t }: { t: string }) {
-  return <div style={cardStyle}><h2 style={{ marginTop: 0 }}>{t}</h2><p>This page is scaffolded and ready for implementation.</p></div>;
-}
-
-function LoginPage() {
-  const [username, setUsername] = useState('gm');
-  const [password, setPassword] = useState('gm');
-  const [status, setStatus] = useState('');
-  const navigate = useNavigate();
-
-  async function onLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus('Logging in...');
-    try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      if (!res.ok) {
-        setStatus('Login failed. Check credentials.');
-        return;
-      }
-      const data = await res.json();
-      localStorage.setItem('campaign_token', data.token ?? '');
-      localStorage.setItem('campaign_user', JSON.stringify(data.user ?? {}));
-      setStatus('Login success.');
-      navigate('/campaigns');
-    } catch {
-      setStatus(`Cannot reach backend at ${API_BASE}`);
-    }
-  }
-
-  return (
-    <div style={cardStyle}>
-      <h2 style={{ marginTop: 0 }}>Login</h2>
-      <p style={{ marginTop: 0 }}>Seed user defaults are prefilled (`gm` / `gm`).</p>
-      <form onSubmit={onLogin} style={{ display: 'grid', gap: 12, maxWidth: 360 }}>
-        <label>Username<input value={username} onChange={e => setUsername(e.target.value)} style={{ width: '100%', padding: 8, marginTop: 4 }} /></label>
-        <label>Password<input type='password' value={password} onChange={e => setPassword(e.target.value)} style={{ width: '100%', padding: 8, marginTop: 4 }} /></label>
-        <button type='submit' style={{ padding: 10, background: '#2563eb', color: 'white', border: 0, borderRadius: 8 }}>Sign in</button>
-      </form>
-      <p>{status}</p>
-      <p><strong>API:</strong> {API_BASE}</p>
-    </div>
-  );
-}
-
-function App() {
-  const links = useMemo(() => ['login', 'campaigns', 'dashboard', 'entities', 'entity/new', 'entity/1', 'relationships/new', 'events', 'event/new', 'sessions', 'session/new', 'tags', 'calendars'], []);
-  return (
-    <BrowserRouter>
-      <div style={shellStyle}>
-        <nav style={navStyle}>
-          <h3 style={{ marginTop: 0 }}>Campaign Chronicler</h3>
-          <div style={{ display: 'grid', gap: 6 }}>
-            {links.map(p => <Link key={p} to={'/' + p} style={{ color: '#93c5fd' }}>{p}</Link>)}
-          </div>
-        </nav>
-        <main style={{ padding: 24 }}>
-          <Routes>
-            <Route path='/login' element={<LoginPage />} />
-            <Route path='/campaigns' element={<Placeholder t='Campaign List' />} />
-            <Route path='/dashboard' element={<Placeholder t='Campaign Dashboard' />} />
-            <Route path='/entities' element={<Placeholder t='Entity List + Filters' />} />
-            <Route path='/entity/new' element={<Placeholder t='Entity Create/Edit Form' />} />
-            <Route path='/entity/:id' element={<Placeholder t='Entity Detail' />} />
-            <Route path='/relationships/new' element={<Placeholder t='Relationship Create/Edit Form' />} />
-            <Route path='/events' element={<Placeholder t='Event Timeline View' />} />
-            <Route path='/event/new' element={<Placeholder t='Event Create/Edit Form + Participants Search' />} />
-            <Route path='/sessions' element={<Placeholder t='Session List' />} />
-            <Route path='/session/new' element={<Placeholder t='Session Create/Edit Form' />} />
-            <Route path='/tags' element={<Placeholder t='Tag Management' />} />
-            <Route path='/calendars' element={<Placeholder t='Calendar Settings (Golarion)' />} />
-            <Route path='*' element={<LoginPage />} />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
-  );
-}
-
+const P=({t}:{t:string})=><div><h2>{t}</h2></div>
+function App(){return <BrowserRouter><div style={{display:'grid',gridTemplateColumns:'220px 1fr',fontFamily:'sans-serif'}}><nav><h3>Campaign Chronicler</h3><div><Link to='/login'>login</Link></div><div><Link to='/entities'>entities</Link></div><div><Link to='/relationships'>relationships</Link></div><div><Link to='/events'>events</Link></div><div><Link to='/timelines'>timelines</Link></div><div><Link to='/tags'>tags</Link></div></nav><main><Routes><Route path='/login' element={<LoginPage/>}/><Route path='/entities' element={<Entities/>}/><Route path='/entity/new' element={<EntityForm/>}/><Route path='/entity/:id' element={<EntityDetail/>}/><Route path='/entity/edit/:id' element={<EntityForm/>}/><Route path='/relationships' element={<P t='Relationship CRUD via API ready'/>}/><Route path='/events' element={<P t='Event CRUD via API ready'/>}/><Route path='/timelines' element={<P t='Timeline CRUD via API ready'/>}/><Route path='/tags' element={<P t='Tag CRUD via API ready'/>}/><Route path='*' element={<LoginPage/>}/></Routes></main></div></BrowserRouter>}
 createRoot(document.getElementById('root')!).render(<App />);
