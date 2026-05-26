@@ -1,7 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export default function TopNav() {
-  const links = ['Campaigns','Characters','Places','Organizations','Events','Timelines','Relationships','Tags','Settings'];
-  return <header className='topnav'><div className='brand'>Campaign Chronicler</div><nav>{links.map(l=><Link key={l} to='/'>{l}</Link>)}</nav><div className='topnav-right'><button>☀/🌙</button><button>GM</button></div></header>;
+  const links = [
+    ['Campaigns','/campaigns'],['Characters','/entities?entity_type=character'],['Places','/entities?entity_type=place'],['Organizations','/entities?entity_type=organization'],['Events','/events'],['Timelines','/timelines'],['Relationships','/relationships'],['Tags','/tags'],['Settings','/settings']
+  ];
+  return <header className='topnav'><div className='brand'>Campaign Chronicler</div><nav>{links.map(([l,to])=><NavLink key={l} to={to}>{l}</NavLink>)}</nav><div className='topnav-right'><button title='Coming later'>☀/🌙</button><button title='Account placeholder'>GM</button></div></header>;
 }
