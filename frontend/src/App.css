@@ -10,3 +10,5 @@
 .badge{display:inline-block;margin-right:6px;padding:2px 8px;border-radius:999px;font-size:12px}.badge.type{background:#e8ddc8}.badge.vis{background:#d8ebd0}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{background:#fff;border:1px solid #d8c7a1;padding:3px 8px;border-radius:999px;font-size:12px}
 .detail-grid{display:grid;grid-template-columns:1fr 280px;gap:14px}
+
+.error-panel{background:#fce8e8;border:1px solid #d66;padding:8px;border-radius:8px;color:#7a1414;margin:8px 0}
