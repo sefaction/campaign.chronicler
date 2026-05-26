@@ -1,0 +1,4 @@
+:root { font-family: Inter, system-ui, sans-serif; }
+body { margin: 0; background: #f3f4f6; color: #111827; }
+* { box-sizing: border-box; }
+input, textarea, button { font: inherit; margin: 4px 0; padding: 8px; }
